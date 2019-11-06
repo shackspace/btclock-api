@@ -1,0 +1,28 @@
+{
+  "name": "btclock-api",
+  "version": "1.0.0",
+  "description": "Web API for accessing the Shackspace's BtClock",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "start:production": "NODE_ENV=production node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shackspace/BtClock-api.git"
+  },
+  "author": "moormaster@gmx.net",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shackspace/BtClock-api/issues"
+  },
+  "homepage": "https://github.com/shackspace/BtClock-api#readme",
+  "dependencies": {
+    "bluetooth-serial-port": "^2.2.6",
+    "config": "^3.2.4",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.4"
+  }
+}
