@@ -9,33 +9,28 @@ module.exports = class BtClock {
 			this.timeout = timeout;
 	}
 
-	get datetime() {
+	requestPromiseFactory(message, jsonFactory) {
 		var btClockInstance = this;
-		return new Promise(
+		return () => new Promise(
 			function(resolve, reject) {
-				btClockInstance.request('T?', function(success, reply, error) {
+				btClockInstance.request(message, function(success, reply, error) {
 					if (!success)
 						reject(error);
 					else
-						resolve({"datetime": reply});
+						resolve(jsonFactory(reply));
 				});
 			});
+	}
+
+	get datetime() {
+		return this.requestPromiseFactory("T?", (reply) => { return {"datetime": reply}; })();
 	}	
 	
 	get blanktime() {
 		var btClockInstance = this;
-
 		return {
 			get config() {
-				return new Promise(
-					function(resolve, reject) {
-						btClockInstance.request('B?', function(success, reply, error) {
-							if (!success)
-								reject(error);
-							else
-								resolve({"blanktime": {"config": reply}});
-						});
-					});
+				return btClockInstance.requestPromiseFactory("B?", (reply) => { return {"blanktime": { "config": reply }}; })();
 			}
 		}
 	}
@@ -45,15 +40,7 @@ module.exports = class BtClock {
 
 		return {
 			get config() {
-				return new Promise(
-					function(resolve, reject) {
-						btClockInstance.request('S?', function(success, reply, error) {
-							if (!success)
-								reject(error);
-							else
-								resolve({"sequence": {"config": reply}});
-						});
-					});
+				return btClockInstance.requestPromiseFactory("S?", (reply) => { return {"sequence": { "config": reply }}; })();
 			}
 		}
 	}
@@ -63,87 +50,31 @@ module.exports = class BtClock {
 
 		return {
 			get 1() {
-				return new Promise(
-					function(resolve, reject) {
-						btClockInstance.request('1?', function(success, reply, error) {
-							if (!success)
-								reject(error);
-							else
-								resolve({"specialline": {"1": reply}});
-						});
-					});
+				return btClockInstance.requestPromiseFactory("1?", (reply) => { return {"specialline": { "1": reply }}; })();
 			},
 
 			get 2() {
-				return new Promise(
-					function(resolve, reject) {
-						btClockInstance.request('2?', function(success, reply, error) {
-							if (!success)
-								reject(error);
-							else
-								resolve({"specialline": {"2": reply}});
-						});
-					});
+				return btClockInstance.requestPromiseFactory("2?", (reply) => { return {"specialline": { "2": reply }}; })();
 			},
 
 			get 3() {
-				return new Promise(
-					function(resolve, reject) {
-						btClockInstance.request('3?', function(success, reply, error) {
-							if (!success)
-								reject(error);
-							else
-								resolve({"specialline": {"3": reply}});
-						});
-					});
+				return btClockInstance.requestPromiseFactory("3?", (reply) => { return {"specialline": { "3": reply }}; })();
 			},
 
 			get 4() {
-				return new Promise(
-					function(resolve, reject) {
-						btClockInstance.request('4?', function(success, reply, error) {
-							if (!success)
-								reject(error);
-							else
-								resolve({"specialline": {"4": reply}});
-						});
-					});
+				return btClockInstance.requestPromiseFactory("4?", (reply) => { return {"specialline": { "4": reply }}; })();
 			},
 
 			get 5() {
-				return new Promise(
-					function(resolve, reject) {
-						btClockInstance.request('5?', function(success, reply, error) {
-							if (!success)
-								reject(error);
-							else
-								resolve({"specialline": {"5": reply}});
-						});
-					});
+				return btClockInstance.requestPromiseFactory("5?", (reply) => { return {"specialline": { "5": reply }}; })();
 			},
 
 			get config() {
-				return new Promise(
-					function(resolve, reject) {
-						btClockInstance.request('C?', function(success, reply, error) {
-							if (!success)
-								reject(error);
-							else
-								resolve({"specialline": {"config": reply}});
-						});
-					});
+				return btClockInstance.requestPromiseFactory("C?", (reply) => { return {"specialline": { "config": reply }}; })();
 			},
 
 			get secondconfig() {
-				return new Promise(
-					function(resolve, reject) {
-						btClockInstance.request('D?', function(success, reply, error) {
-							if (!success)
-								reject(error);
-							else
-								resolve({"specialline": {"secondconfig": reply}});
-						});
-					});
+				return btClockInstance.requestPromiseFactory("D?", (reply) => { return {"specialline": { "secondconfig": reply }}; })();
 			}
 		}			
 	}
