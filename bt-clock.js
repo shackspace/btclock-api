@@ -8,7 +8,146 @@ module.exports = class BtClock {
 		if (timeout > 0)
 			this.timeout = timeout;
 	}
+
+	get datetime() {
+		var btClockInstance = this;
+		return new Promise(
+			function(resolve, reject) {
+				btClockInstance.request('T?', function(success, reply, error) {
+					if (!success)
+						reject(error);
+					else
+						resolve({"datetime": reply});
+				});
+			});
+	}	
 	
+	get blanktime() {
+		var btClockInstance = this;
+
+		return {
+			get config() {
+				return new Promise(
+					function(resolve, reject) {
+						btClockInstance.request('B?', function(success, reply, error) {
+							if (!success)
+								reject(error);
+							else
+								resolve({"blanktime": {"config": reply}});
+						});
+					});
+			}
+		}
+	}
+
+	get sequence() {
+		var btClockInstance = this;
+
+		return {
+			get config() {
+				return new Promise(
+					function(resolve, reject) {
+						btClockInstance.request('S?', function(success, reply, error) {
+							if (!success)
+								reject(error);
+							else
+								resolve({"sequence": {"config": reply}});
+						});
+					});
+			}
+		}
+	}
+
+	get specialline() {
+		var btClockInstance = this;
+
+		return {
+			get 1() {
+				return new Promise(
+					function(resolve, reject) {
+						btClockInstance.request('1?', function(success, reply, error) {
+							if (!success)
+								reject(error);
+							else
+								resolve({"specialline": {"1": reply}});
+						});
+					});
+			},
+
+			get 2() {
+				return new Promise(
+					function(resolve, reject) {
+						btClockInstance.request('2?', function(success, reply, error) {
+							if (!success)
+								reject(error);
+							else
+								resolve({"specialline": {"2": reply}});
+						});
+					});
+			},
+
+			get 3() {
+				return new Promise(
+					function(resolve, reject) {
+						btClockInstance.request('3?', function(success, reply, error) {
+							if (!success)
+								reject(error);
+							else
+								resolve({"specialline": {"3": reply}});
+						});
+					});
+			},
+
+			get 4() {
+				return new Promise(
+					function(resolve, reject) {
+						btClockInstance.request('4?', function(success, reply, error) {
+							if (!success)
+								reject(error);
+							else
+								resolve({"specialline": {"4": reply}});
+						});
+					});
+			},
+
+			get 5() {
+				return new Promise(
+					function(resolve, reject) {
+						btClockInstance.request('5?', function(success, reply, error) {
+							if (!success)
+								reject(error);
+							else
+								resolve({"specialline": {"5": reply}});
+						});
+					});
+			},
+
+			get config() {
+				return new Promise(
+					function(resolve, reject) {
+						btClockInstance.request('C?', function(success, reply, error) {
+							if (!success)
+								reject(error);
+							else
+								resolve({"specialline": {"config": reply}});
+						});
+					});
+			},
+
+			get secondconfig() {
+				return new Promise(
+					function(resolve, reject) {
+						btClockInstance.request('D?', function(success, reply, error) {
+							if (!success)
+								reject(error);
+							else
+								resolve({"specialline": {"secondconfig": reply}});
+						});
+					});
+			}
+		}			
+	}
+
 	request(message, callback) {
 		var btClockInstance = this;
 		console.log('connecting...');
@@ -16,6 +155,7 @@ module.exports = class BtClock {
 		var btSerial = new bluetoothSerialPort.BluetoothSerialPort();
 		btSerial.connect(this.address, this.channel, function() {
 			console.log('connected to ' + btClockInstance.address + ' on channel ' + btClockInstance.channel + '...');
+			console.log('sending: "' + message + '"');
 
 			btSerial.write(Buffer.from(message + '\n', 'utf-8'), function(err, bytesWritten) {
 				if (err) console.log(err);
