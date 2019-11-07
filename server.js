@@ -19,19 +19,33 @@ app.get('/v1', function(req, res) {
   var response = {};
   var errorResponse = null;
 
-  btClock.datetime
-   .then( (v) => new Promise( (res, rej) => { response.datetime = v.datetime; setTimeout(() => res(btClock.blanktime.config), 1000); } ) )
-   .then( (v) => new Promise( (res, rej) => { response.blanktime = v.blanktime; setTimeout(() => res(btClock.sequence.config), 1000); } ) )
-   .then( (v) => new Promise( (res, rej) => { response.sequence = v.sequence; setTimeout(() => res(btClock.specialline.config), 1000); } ) )
-   .then( (v) => new Promise( (res, rej) => { response.specialline = v.specialline; setTimeout(() => res(btClock.specialline.secondconfig), 1000); } ) )
-   .then( (v) => new Promise( (res, rej) => { response.specialline.secondconfig = v.specialline.secondconfig; setTimeout(() => res(btClock.specialline[1]), 1000); } ) )
-   .then( (v) => new Promise( (res, rej) => { response.specialline[1] = v.specialline[1]; setTimeout(() => res(btClock.specialline[2]), 1000); } ) )
-   .then( (v) => new Promise( (res, rej) => { response.specialline[2] = v.specialline[2]; setTimeout(() => res(btClock.specialline[3]), 1000); } ) )
-   .then( (v) => new Promise( (res, rej) => { response.specialline[3] = v.specialline[3]; setTimeout(() => res(btClock.specialline[4]), 1000); } ) )
-   .then( (v) => new Promise( (res, rej) => { response.specialline[4] = v.specialline[4]; setTimeout(() => res(btClock.specialline[5]), 1000); } ) )
-   .then( (v) => { response.specialline[5] = v.specialline[5]; return response; } )
-   .then( (v) => { res.type('json').send(JSON.stringify(v)); } )
-   .catch( (e) => { res.status(500).send(e) } );
+  function delay() {
+    return function(value) {
+      return new Promise( (resolve, reject) => { setTimeout( () => resolve(value), 300 ); } );
+    }
+  }
+
+  btClock.datetime.then( (v) => { response.datetime = v.datetime; } )
+  .then( delay() )
+  .then( (v) => btClock.blanktime.config ).then( (v) => { response.blanktime = v.blanktime; } )
+  .then( delay() )
+  .then( (v) => btClock.sequence.config ).then( (v) => { response.sequence = v.sequence; } )
+  .then( delay() )
+  .then( (v) => btClock.specialline.config ).then( (v) => { response.specialline = v.specialline; } )
+  .then( delay() )
+  .then( (v) => btClock.specialline.secondconfig ).then( (v) => { response.specialline.secondconfig = v.specialline.secondconfig; } )
+  .then( delay() )
+  .then( (v) => btClock.specialline[1] ).then( (v) => { response.specialline[1] = v.specialline[1]; } )
+  .then( delay() )
+  .then( (v) => btClock.specialline[2] ).then( (v) => { response.specialline[2] = v.specialline[2]; } )
+  .then( delay() )
+  .then( (v) => btClock.specialline[3] ).then( (v) => { response.specialline[3] = v.specialline[3]; } )
+  .then( delay() )
+  .then( (v) => btClock.specialline[4] ).then( (v) => { response.specialline[4] = v.specialline[4]; } )
+  .then( delay() )
+  .then( (v) => btClock.specialline[5] ).then( (v) => { response.specialline[5] = v.specialline[5]; } )
+  .then( (v) => { res.type('json').send(JSON.stringify(response)); } )
+  .catch( (e) => { res.status(500).send(e) } );
 });
 
 app.get('/v1/datetime', function(req, res) {
