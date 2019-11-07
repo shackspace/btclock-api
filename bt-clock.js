@@ -23,7 +23,18 @@ module.exports = class BtClock {
 	}
 
 	get datetime() {
-		return this.requestPromiseFactory("T?", (reply) => { return {"datetime": reply}; })();
+		return this.requestPromiseFactory("T?", (reply) => {
+			// parse date string like 2019-11-07(03) 17:03:10
+			var match, year, month, day, dayOfWeek, hour, minute, second;
+			[match, year, month, day, dayOfWeek, hour, minute, second] = reply.match(
+				/([0-9]{4})-([0-9]{2})-([0-9]{2})\(([0-9]{2})\) ([0-9]{2}):([0-9]{2}):([0-9]{2})/
+			);
+
+			dayOfWeek = [ "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" ][parseInt(dayOfWeek)];
+			var iso8601 = year + '-' + month + '-' + day + 'T' + hour + ':' + minute + ':' + second;
+
+			return {"datetime": { "weekday": dayOfWeek, "iso8601": iso8601 }};
+		})();
 	}	
 	
 	get blanktime() {
