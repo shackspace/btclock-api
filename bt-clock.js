@@ -22,28 +22,82 @@ module.exports = class BtClock {
 			});
 	}
 
+	sendPromiseFactory(message) {
+		var btClockInstance = this;
+		return () => new Promise(
+			function(resolve, reject) {
+				btClockInstance.request(message, function(success, reply, error) {
+					if (!success)
+						reject(error);
+					else
+						resolve();
+				});
+			});
+	}
+
 	get datetime() {
-		return this.requestPromiseFactory("T?", (reply) => {
+		return this.requestPromiseFactory('T?', (reply) => {
 			// parse date string like 2019-11-07(03) 17:03:10
 			var match, year, month, day, dayOfWeek, hour, minute, second;
 			[match, year, month, day, dayOfWeek, hour, minute, second] = reply.match(
 				/([0-9]{4})-([0-9]{2})-([0-9]{2})\(([0-9]{2})\) ([0-9]{2}):([0-9]{2}):([0-9]{2})/
 			);
 
-			dayOfWeek = [ "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" ][parseInt(dayOfWeek)];
+			dayOfWeek = [ 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun' ][parseInt(dayOfWeek)];
 			var iso8601 = year + '-' + month + '-' + day + 'T' + hour + ':' + minute + ':' + second;
 
-			return {"datetime": { "weekday": dayOfWeek, "iso8601": iso8601 }};
+			return {'datetime': { 'weekday': dayOfWeek, 'iso8601': iso8601 }};
 		})();
-	}	
+	}
+
+	setDateTime(date) {
+		var year, month, day, hour, minute, second, dayOfWeek;
+
+		year = date.getFullYear() % 100;
+		if (year < 10)
+			year = '0' + year;
+
+		month = date.getMonth()+1;
+		if (month < 10)
+			month = '0' + month;
+
+		day = date.getDate();
+		if (day < 10)
+			day = '0' + day;
+
+		hour = date.getHours();
+		if (hour < 10)
+			hour = '0' + hour;
+
+		minute = date.getMinutes();
+		if (minute < 10)
+			minute = '0' + minute;
+
+		second = date.getSeconds();
+		if (second < 10)
+			second = '0' + second;
+
+		dayOfWeek = date.getDay()-1;
+		if (dayOfWeek < 0)
+			dayOfWeek += 7;
+
+		if (dayOfWeek < 10)
+			dayOfWeek = '0' + dayOfWeek;
+
+		return this.sendPromiseFactory('T=' + year + month + day + hour + minute + second + dayOfWeek)();
+	}
 	
 	get blanktime() {
 		var btClockInstance = this;
 		return {
 			get config() {
-				return btClockInstance.requestPromiseFactory("B?", (reply) => { return {"blanktime": { "config": reply }}; })();
+				return btClockInstance.requestPromiseFactory('B?', (reply) => { return {'blanktime': { 'config': reply }}; })();
 			}
 		}
+	}
+
+	setBlankTime(config) {
+		return this.sendPromiseFactory('B=' + config)();
 	}
 
 	get sequence() {
@@ -51,9 +105,13 @@ module.exports = class BtClock {
 
 		return {
 			get config() {
-				return btClockInstance.requestPromiseFactory("S?", (reply) => { return {"sequence": { "config": reply }}; })();
+				return btClockInstance.requestPromiseFactory('S?', (reply) => { return {'sequence': { 'config': reply }}; })();
 			}
 		}
+	}
+
+	setSequence(config) {
+		return this.sendPromiseFactory('S=' + config)();
 	}
 
 	get specialline() {
@@ -61,33 +119,45 @@ module.exports = class BtClock {
 
 		return {
 			get 1() {
-				return btClockInstance.requestPromiseFactory("1?", (reply) => { return {"specialline": { "1": reply }}; })();
+				return btClockInstance.requestPromiseFactory('1?', (reply) => { return {'specialline': { '1': { 'line': reply }}}; })();
 			},
 
 			get 2() {
-				return btClockInstance.requestPromiseFactory("2?", (reply) => { return {"specialline": { "2": reply }}; })();
+				return btClockInstance.requestPromiseFactory('2?', (reply) => { return {'specialline': { '2': { 'line': reply } }}; })();
 			},
 
 			get 3() {
-				return btClockInstance.requestPromiseFactory("3?", (reply) => { return {"specialline": { "3": reply }}; })();
+				return btClockInstance.requestPromiseFactory('3?', (reply) => { return {'specialline': { '3': { 'line': reply } }}; })();
 			},
 
 			get 4() {
-				return btClockInstance.requestPromiseFactory("4?", (reply) => { return {"specialline": { "4": reply }}; })();
+				return btClockInstance.requestPromiseFactory('4?', (reply) => { return {'specialline': { '4': { 'line': reply } }}; })();
 			},
 
 			get 5() {
-				return btClockInstance.requestPromiseFactory("5?", (reply) => { return {"specialline": { "5": reply }}; })();
+				return btClockInstance.requestPromiseFactory('5?', (reply) => { return {'specialline': { '5': { 'line': reply } }}; })();
 			},
 
 			get config() {
-				return btClockInstance.requestPromiseFactory("C?", (reply) => { return {"specialline": { "config": reply }}; })();
+				return btClockInstance.requestPromiseFactory('C?', (reply) => { return {'specialline': { 'config': reply }}; })();
 			},
 
 			get secondconfig() {
-				return btClockInstance.requestPromiseFactory("D?", (reply) => { return {"specialline": { "secondconfig": reply }}; })();
+				return btClockInstance.requestPromiseFactory('D?', (reply) => { return {'specialline': { 'secondconfig': reply }}; })();
 			}
-		}			
+		}
+	}
+
+	setSpecialLine(n, line) {
+		return this.sendPromiseFactory(n + '=' + line)();
+	}
+
+	setSpecialLineConfig(config) {
+		return this.sendPromiseFactory('C=' + config)();
+	}
+
+	setSpecialLineSecondConfig(config) {
+		return this.sendPromiseFactory('D=' + config)();
 	}
 
 	request(message, callback) {
@@ -112,29 +182,28 @@ module.exports = class BtClock {
 				reply += buffer.toString('utf-8');
 				console.log('received so far: ' + reply);
 
-				var linebreakIndex = reply.indexOf('\n');
-				if (linebreakIndex >= 0) {
-					if (reply.substr(linebreakIndex + 1, 3) == 'OK\n') {
-						clearTimeout(timeoutHandle);
-						btSerial.close();
-						btSerial.off('data', onData);
-						console.log('connection closed');
+				if (reply.match( /(\n?)OK\n/ )) {
+					clearTimeout(timeoutHandle);
+					btSerial.close();
+					btSerial.off('data', onData);
+					console.log('connection closed');
 
-						success = true;
+					success = true;
+					var linebreakIndex = reply.indexOf('\n');
+					if (linebreakIndex >= 0)
 						reply = reply.slice(0, linebreakIndex);
-						callback(success, reply, error);
-					}
-					if (reply.startsWith('No|')) {
-						clearTimeout(timeoutHandle);
-						btSerial.close();
-						btSerial.off('data', onData);
-						console.log('connection closed');
+					callback(success, reply, error);
+				}
+				if (reply.match( /(\n?)No\|.*\n/ )) {
+					clearTimeout(timeoutHandle);
+					btSerial.close();
+					btSerial.off('data', onData);
+					console.log('connection closed');
 
-						success = false;
-						error = reply.slice('No|'.length);
-						reply = null;
-						callback(success, reply, error);
-					}
+					success = false;
+					error = reply;
+					reply = null;
+					callback(success, reply, error);
 				}
 			}
 
@@ -157,7 +226,7 @@ module.exports = class BtClock {
 
 			var success = false;
 			var reply = null;
-			var error = "cannot connect to bluetooth device";
+			var error = 'cannot connect to bluetooth device';
 			callback(success, reply, error);
 		});
 	}
