@@ -24,8 +24,8 @@ Starts http service on port 80 per default. If --readonly is given no changes ca
 ```
 Usage:
 npm run start:production -- [--host <host>] [--port <port>] [--baseurl <base url>] [--readonly] [--mac <bluetooth address>] [--channel <bluetooth channel>]
-	--host:	host ip to bind to. Default: localhost
-	--port:	port to bind to. Default: 8081
+	--host:	host ip to bind to. Default: 0.0.0.0
+	--port:	port to bind to. Default: 80
 	--baseurl:	base URL under which the api endpoints will be served. Default: /btclock
 	--readonly:	if given, prevents the web api from sending bluetooth requests which change eeprom values in the btclock. Default: false
 	--mac:	bluetooth address of the btclock. Default: 20:11:02:47:01:01
