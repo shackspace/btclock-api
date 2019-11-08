@@ -7,6 +7,7 @@ Nodejs api for accessing the BtClock
 ### developement
 
 ```
+nix-shell -p nodejs python bluez
 npm install
 npm start
 ```
@@ -15,6 +16,7 @@ Starts http service on port 8081 using nodemon.
 ### production
 
 ```
+nix-shell -p nodejs python bluez
 npm install
 npm run start:production
 ```
