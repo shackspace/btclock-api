@@ -7,6 +7,7 @@ Nodejs api for accessing the BtClock
 ### developement
 
 ```
+npm install
 npm start
 ```
 Starts http service on port 8081 using nodemon.
@@ -14,6 +15,7 @@ Starts http service on port 8081 using nodemon.
 ### production
 
 ```
+npm install
 npm run start:production
 ```
 Starts http service on port 80 per default. If --readonly is given no changes can be made to the eeprom of the btclock.
