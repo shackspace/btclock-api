@@ -74,6 +74,10 @@ function readonlyGuard() {
 	});
 }
 
+app.get('/', function(req, res) {
+	res.redirect(baseurl + '/datetime');
+});
+
 app.get(baseurl, function(req, res) {
 	var response = {};
 	var errorResponse = null;
